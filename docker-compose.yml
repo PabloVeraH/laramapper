@@ -1,0 +1,36 @@
+version: '3'
+services:
+  app:
+    image: joselfonsecadt/nginx-php7.3:latest
+    container_name: app_${APP_NAME}
+    volumes:
+      - ./:/var/www/html
+    links:
+      - mysql
+    ports:
+      - 8080:80
+  mysql:
+    image: mysql:5.7
+    container_name: db_${APP_NAME}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+    ports:
+      - ${DB_PORT}:3306
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: pma_${APP_NAME}
+      links:
+        - mysql
+      environment:
+        PMA_HOST: mysql
+        PMA_PORT: ${DB_PORT}
+        PMA_ARBITRARY: 1
+      #restart: always
+      ports:
+        - 8184:80
